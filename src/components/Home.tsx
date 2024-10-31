@@ -6,14 +6,13 @@ import {
   capitalize,
   getPriorityColor,
   getStatusColor,
+  getUserId,
   modifyDate,
 } from "../utils/appUtils";
 import EditTask from "./EditTask";
 import Dialog from "../assets/Dialog";
 import { toast } from "react-toastify";
 import io from "socket.io-client";
-
-const socket = io(process.env.REACT_APP_BASE_URL);
 
 type TaskStatus = "pending" | "in-progress" | "completed" | "blocked";
 
@@ -51,6 +50,14 @@ function Home() {
   const [dialog, setDialog] = useState<any>({});
 
   useEffect(() => {
+    const userId = getUserId();
+
+    if (!userId) return;
+
+    const socket = io(process.env.REACT_APP_BASE_URL, {
+      query: { userId: userId },
+    });
+
     // Listen for real-time task updates
     socket.on("taskAdded", (newTask: TaskType) => {
       setTasks((prevTasks) => [...prevTasks, newTask]);
@@ -93,6 +100,7 @@ function Home() {
       socket.off("taskAdded");
       socket.off("taskUpdated");
       socket.off("taskDeleted");
+      socket.disconnect();
     };
   }, []);
 

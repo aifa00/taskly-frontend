@@ -1,3 +1,22 @@
+import { jwtDecode } from "jwt-decode";
+
+// Decode the token to get the user ID
+export const getUserId = (): string | undefined => {
+  const token = localStorage.getItem("token");
+  let userId: string | undefined;
+
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token) as any;
+      userId = decodedToken.userId;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  }
+
+  return userId;
+};
+
 export const getStatusColor = (status: string) => {
   if (status === "pending") return "text-amber-400"; // Warm Amber
   if (status === "in-progress") return "text-indigo-500"; // Muted Indigo
@@ -23,3 +42,19 @@ export const modifyDate = (date: string) => {
     year: "numeric",
   });
 };
+
+// // Decode the token to get the user ID
+// export const getUserId = () => {
+//   const token = localStorage.getItem("token");
+//   let userId;
+//   if (token) {
+//     try {
+//       const decodedToken = jwtDecode<>(token);
+//       userId = decodedToken.userId;
+//     } catch (error) {
+//       console.error("Failed to decode token:", error);
+//     }
+//   }
+
+//   return userId;
+// };
